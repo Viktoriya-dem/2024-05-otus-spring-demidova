@@ -1,1 +1,2 @@
-# 2024-05-otus-spring-demidova
+Демидова Виктория Валерьевна
+Курс "Разработчик на Spring Framework"
