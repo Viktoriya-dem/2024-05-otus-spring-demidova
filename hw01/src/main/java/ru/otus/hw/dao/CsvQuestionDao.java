@@ -10,6 +10,7 @@ import ru.otus.hw.exceptions.QuestionReadException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
@@ -18,7 +19,8 @@ public class CsvQuestionDao implements QuestionDao {
 
     @Override
     public List<Question> findAll() {
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(fileNameProvider.getTestFileName())) {
+        try (InputStream is = Objects.requireNonNull(getClass().getClassLoader()
+                        .getResourceAsStream(fileNameProvider.getTestFileName()))) {
 
             List<QuestionDto> beans = new CsvToBeanBuilder<QuestionDto>(
                     new InputStreamReader(is))

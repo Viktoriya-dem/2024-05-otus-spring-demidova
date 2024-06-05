@@ -25,9 +25,9 @@ public class TestServiceImpl implements TestService {
         for (Question question: questions) {
             ioService.printLine(question.text());
             if (question.answers() != null) {
-                ioService.printLine(question.answers().stream().map(Answer::text).collect(Collectors.joining(" | ")));
+                ioService.printFormattedLine(question.answers().stream()
+                        .map(Answer::text).collect(Collectors.joining("\n")));
             }
-            ioService.printLine("");
         }
     }
 }
