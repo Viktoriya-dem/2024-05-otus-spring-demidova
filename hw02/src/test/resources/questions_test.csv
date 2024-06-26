@@ -1,2 +1,2 @@
 # Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
-Read correctly?;1. yes%true|2. no%false
+Read correctly?;yes%true|no%false

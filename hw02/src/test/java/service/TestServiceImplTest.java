@@ -71,8 +71,8 @@ public class TestServiceImplTest {
 
     private static List<Question> getQuestionTestData() {
         List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer("1. yes", true));
-        answers.add(new Answer("2. no", false));
+        answers.add(new Answer("yes", true));
+        answers.add(new Answer("no", false));
         Question question = new Question("Read correctly?", answers);
 
         return List.of(question);
@@ -86,8 +86,8 @@ public class TestServiceImplTest {
         Student student = getStudentTestData();
         TestResult testResult = new TestResult(student);
         List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer("1. yes", true));
-        answers.add(new Answer("2. no", false));
+        answers.add(new Answer("yes", true));
+        answers.add(new Answer("no", false));
         Question question = new Question("Read correctly?", answers);
         testResult.applyAnswer(question, true);
 
