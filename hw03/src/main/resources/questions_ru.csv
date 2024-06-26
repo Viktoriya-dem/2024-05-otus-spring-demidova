@@ -1,0 +1,6 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Есть ли жизнь на Марсе?;1. Это науке пока не известно%true|2. Конечно. Красные (НЛО) это с Марса. А зеленые (НЛО) с Венеры%false|3. Точно нет%false
+Как нужно загружать ресурс из jar в Java?;1. ClassLoader#geResourceAsStream или ClassPathResource#getInputStream%true|2. ClassLoader#geResource#getFile + FileReader%false|3. Wingardium Leviosa%false
+Какой предпочтительный способ реакции на исключения?;1. @SneakyThrow%false|2. Проброс дальше с предварительным оборачиванием в бизнес-исключение (например, QuestionReadException)%true|3. Игнорирование исключения%false
+Какая последняя версия Java в 2024?;1. 11%false|2. 22%true|3. 17%false
+Какого принципа ООП не существует?;1. полиморфизм%false|2. дедукция%true|3. наследование%false

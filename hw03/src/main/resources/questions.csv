@@ -1,0 +1,6 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Is there life on Mars?;1. Science doesn't know this yet%true|2. Certainly. The red UFO is from Mars. And green is from Venus%false|3. Absolutely not%false
+How should resources be loaded form jar in Java?;1. ClassLoader#geResourceAsStream or ClassPathResource#getInputStream%true|2. ClassLoader#geResource#getFile + FileReader%false|3. Wingardium Leviosa%false
+Which option is a good way to handle the exception?;1. @SneakyThrow%false|2. Rethrow with wrapping in business exception (for example, QuestionReadException)%true|3. Ignoring exception%false
+What is the last version of java in 2024?;1. 11%false|2. 22%true|3. 17%false
+What principle of OOP does not exist?;1. polymorphism%false|2. deduction%true|3. inheritance%false
