@@ -60,8 +60,8 @@ public class CsvQuestionDaoTest {
 
     private static Question getTestData() {
         List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer("1. yes", true));
-        answers.add(new Answer("2. no", false));
+        answers.add(new Answer("yes", true));
+        answers.add(new Answer("no", false));
         return new Question("Read correctly?", answers);
     }
 

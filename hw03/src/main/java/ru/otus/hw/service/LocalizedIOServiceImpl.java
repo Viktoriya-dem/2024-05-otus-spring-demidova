@@ -58,7 +58,7 @@ public class LocalizedIOServiceImpl implements LocalizedIOService {
 
     @Override
     public int readIntForRangeLocalized(int min, int max, String errorMessageCode) {
-        return ioService.readIntForRange(min, max, localizedMessagesService.getMessage(errorMessageCode));
+        return ioService.readIntForRange(min, max, localizedMessagesService.getMessage(errorMessageCode, max));
     }
 
     @Override

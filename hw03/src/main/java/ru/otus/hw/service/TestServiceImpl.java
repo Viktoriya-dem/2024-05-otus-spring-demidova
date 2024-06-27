@@ -3,10 +3,10 @@ package ru.otus.hw.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.dao.QuestionDao;
-import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Student;
 import ru.otus.hw.domain.TestResult;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +29,13 @@ public class TestServiceImpl implements TestService {
         for (var question: questions) {
             var isAnswerValid = false;
             ioService.printLine(question.text());
-            if (question.answers() != null) {
+            if (question.answers().size() != 0) {
+                AtomicInteger finalNumber = new AtomicInteger();
                 ioService.printFormattedLine(question.answers().stream()
-                        .map(Answer::text).collect(Collectors.joining("\n")));
-                int answer = ioService.readIntForRangeLocalized(1, 3, "TestService.error.message");
+                        .map(e -> String.format("%s %s", finalNumber.incrementAndGet(), e.text()))
+                        .collect(Collectors.joining("\n")));
+                int answer = ioService.readIntForRangeLocalized(1, question.answers().size(),
+                        "TestService.error.message");
                 isAnswerValid = question.answers().get(answer - 1).isCorrect();
                 testResult.applyAnswer(question, isAnswerValid);
             }

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 @DisplayName("Метод executeTestFor() должен ")
@@ -42,7 +44,7 @@ public class TestServiceImplTest {
     @DisplayName(" вернуть корректный результат теста")
     public void shouldReturnCorrectTestResult() {
         given(questionDao.findAll()).willReturn(getQuestionTestData());
-        given(ioService.readIntForRangeLocalized(1, 3, "TestService.error.message")).willReturn(1);
+        given(ioService.readIntForRangeLocalized(anyInt(), anyInt(), anyString())).willReturn(1);
 
         TestResult testResult = testService.executeTestFor(getStudentTestData());
         assertThat(testResult).isEqualTo(getResultTestData());
@@ -52,7 +54,7 @@ public class TestServiceImplTest {
     @DisplayName(" засчитать правильный ответ")
     public void shouldCountCorrectAnswer() {
         given(questionDao.findAll()).willReturn(getQuestionTestData());
-        given(ioService.readIntForRangeLocalized(1, 3, "TestService.error.message")).willReturn(1);
+        given(ioService.readIntForRangeLocalized(anyInt(), anyInt(), anyString())).willReturn(1);
 
         TestResult testResult = testService.executeTestFor(getStudentTestData());
 
@@ -63,7 +65,7 @@ public class TestServiceImplTest {
     @DisplayName(" не засчитать неправильный ответ")
     public void shouldNotCountCorrectAnswer() {
         given(questionDao.findAll()).willReturn(getQuestionTestData());
-        given(ioService.readIntForRangeLocalized(1, 3, "TestService.error.message")).willReturn(2);
+        given(ioService.readIntForRangeLocalized(anyInt(), anyInt(), anyString())).willReturn(2);
 
         TestResult testResult = testService.executeTestFor(getStudentTestData());
         assertThat(testResult.getRightAnswersCount()).isEqualTo(0);
@@ -71,8 +73,8 @@ public class TestServiceImplTest {
 
     private static List<Question> getQuestionTestData() {
         List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer("1. yes", true));
-        answers.add(new Answer("2. no", false));
+        answers.add(new Answer("yes", true));
+        answers.add(new Answer("no", false));
         Question question = new Question("Read correctly?", answers);
 
         return List.of(question);
@@ -86,8 +88,8 @@ public class TestServiceImplTest {
         Student student = getStudentTestData();
         TestResult testResult = new TestResult(student);
         List<Answer> answers = new ArrayList<>();
-        answers.add(new Answer("1. yes", true));
-        answers.add(new Answer("2. no", false));
+        answers.add(new Answer("yes", true));
+        answers.add(new Answer("no", false));
         Question question = new Question("Read correctly?", answers);
         testResult.applyAnswer(question, true);
 
