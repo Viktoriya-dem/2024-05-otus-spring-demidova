@@ -32,7 +32,8 @@ public class TestServiceImpl implements TestService {
                 ioService.printFormattedLine(question.answers().stream()
                         .map(e -> String.format("%s %s", finalNumber.incrementAndGet(), e.text()))
                         .collect(Collectors.joining("\n")));
-                int answer = ioService.readIntForRange(1, 3, "Введите цифру от 1 до 3");
+                int answer = ioService.readIntForRange(1, question.answers().size(),
+                        "Введите цифру от 1 до " + question.answers().size());
                 isAnswerValid = question.answers().get(answer - 1).isCorrect();
                 testResult.applyAnswer(question, isAnswerValid);
             }
