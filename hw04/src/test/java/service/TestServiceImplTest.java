@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import ru.otus.hw.Application;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -25,8 +23,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest(properties = "spring.shell.interactive.enabled=false")
-@ContextConfiguration(classes = Application.class)
+@SpringBootTest(classes = TestServiceImpl.class)
 @DisplayName("Метод executeTestFor() должен ")
 public class TestServiceImplTest {
 
