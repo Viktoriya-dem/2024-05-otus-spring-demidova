@@ -1,0 +1,7 @@
+${AnsiColor.MAGENTA}  ,88~-_   ~~~888~~~ 888   | ,d88~~\       ,d88~~\ ~~~888~~~ 888   | 888~-_   Y88b    /
+${AnsiColor.MAGENTA} d888   \     888    888   | 8888          8888       888    888   | 888   \   Y88b  /
+${AnsiColor.MAGENTA}88888    |    888    888   | `Y88b         `Y88b      888    888   | 888    |   Y88b/
+${AnsiColor.MAGENTA}88888    |    888    888   |  `Y88b,        `Y88b,    888    888   | 888    |    Y8Y
+${AnsiColor.MAGENTA} Y888   /     888    Y88   |    8888          8888    888    Y88   | 888   /      Y
+${AnsiColor.MAGENTA}  `88_-~      888     "8__/  \__88P'       \__88P'    888     "8__/  888_-~      /
+${AnsiColor.DEFAULT}
