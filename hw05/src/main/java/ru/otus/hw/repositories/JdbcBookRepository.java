@@ -42,13 +42,16 @@ public class JdbcBookRepository implements BookRepository {
     @Override
     public Optional<Book> findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        Book book = namedParameterJdbcTemplate.query("select b.id, b.title, a.id author_id, a.full_name from books b " +
+        Book book = namedParameterJdbcTemplate.query("select b.id as book_id, b.title as book_title, " +
+                                                     "a.id as author_id, a.full_name as author_full_name, " +
+                                                     "g.id as genre_id, g.name as genre_name " +
+                                                     "from books b " +
                                                      "left join authors a on b.author_id = a.id " +
+                                                     "left join books_genres bg on bg.book_id = b.id " +
+                                                     "left join genres g on g.id = bg.genre_id " +
                                                      "where b.id = :id", params, new BookResultSetExtractor());
-        var genres = getGenreRelationsById(id);
 
         if (book != null && book.getId() != 0) {
-            book.setGenres(genres);
             return Optional.of(book);
         }
 
@@ -79,7 +82,7 @@ public class JdbcBookRepository implements BookRepository {
     }
 
     private List<Book> getAllBooksWithoutGenres() {
-        return namedParameterJdbcTemplate.query("select b.id, b.title, a.id author_id, a.full_name " +
+        return namedParameterJdbcTemplate.query("select b.id, b.title, a.id as author_id, a.full_name " +
                                                 "from books b " +
                                                 "left join authors a on b.author_id = a.id ",
                 new BookRowMapper());
@@ -89,16 +92,6 @@ public class JdbcBookRepository implements BookRepository {
         return namedParameterJdbcTemplate.query(
                 "select book_id, genre_id from books_genres bg order by book_id, genre_id",
                 (rs, i) -> new BookGenreRelation(rs.getLong(1), rs.getLong(2)));
-    }
-
-    private List<Genre> getGenreRelationsById(long bookId) {
-        return namedParameterJdbcTemplate.query(
-                "select g.id, g.name from books_genres bg " +
-                "left join genres g on bg.genre_id = g.id " +
-                "where bg.book_id = :id " +
-                "order by genre_id",
-                Map.of("id", bookId),
-                (rs, i) -> new Genre(rs.getLong(1), rs.getString(2)));
     }
 
     private void mergeBooksInfo(List<Book> booksWithoutGenres, List<Genre> genres,
@@ -197,16 +190,21 @@ public class JdbcBookRepository implements BookRepository {
         @Override
         public Book extractData(ResultSet rs) throws SQLException, DataAccessException {
             Book book = new Book();
+            book.setGenres(new ArrayList<>());
+
             while (rs.next()) {
-                long id = rs.getLong("id");
+                long bookId = rs.getLong("book_id");
                 long authorId = rs.getLong("author_id");
-                String title = rs.getString("title");
-                String authorFullName = rs.getString("full_name");
-                book.setId(id);
-                book.setTitle(title);
+                String bookTitle = rs.getString("book_title");
+                String authorFullName = rs.getString("author_full_name");
+                long genreId = rs.getLong("genre_id");
+                String genreName = rs.getString("genre_name");
+                book.setId(bookId);
+                book.setTitle(bookTitle);
                 book.setAuthor(new Author(authorId, authorFullName));
-                book.setGenres(new ArrayList<>());
+                book.getGenres().add(new Genre(genreId, genreName));
             }
+
             return book;
         }
     }

@@ -1,5 +1,8 @@
 package ru.otus.hw.repositories;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -29,9 +32,26 @@ public class JdbcAuthorRepository implements AuthorRepository {
     @Override
     public Optional<Author> findById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
-        return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(
-                "select id, full_name from authors where id = :id", params, new AuthorRowMapper()
+        return Optional.ofNullable(namedParameterJdbcTemplate.query(
+                "select id, full_name from authors a where id = :id", params, new AuthorResultSetExtractor()
         ));
+    }
+
+    @SuppressWarnings("ClassCanBeRecord")
+    @RequiredArgsConstructor
+    private static class AuthorResultSetExtractor implements ResultSetExtractor<Author> {
+
+        @Override
+        public Author extractData(ResultSet rs) throws SQLException, DataAccessException {
+            Author author = new Author();
+            while (rs.next()) {
+                long id = rs.getLong("id");
+                String fullName = rs.getString("full_name");
+                author.setId(id);
+                author.setFullName(fullName);
+            }
+            return author;
+        }
     }
 
     private static class AuthorRowMapper implements RowMapper<Author> {
