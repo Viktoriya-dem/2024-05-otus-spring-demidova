@@ -37,7 +37,8 @@ public class CommentServiceImplTest {
         var expectedComment = getCommentData();
 
         assertThat(actualComment).isPresent();
-        compareComment(actualComment.get(), expectedComment);
+        assertThat(actualComment.get().getId()).isEqualTo(expectedComment.getId());
+        assertThat(actualComment.get().getText()).isEqualTo(expectedComment.getText());
     }
 
     @DisplayName("должен загружать список всех комментариев по id книги")
@@ -56,9 +57,8 @@ public class CommentServiceImplTest {
         var expectedComment = getNewCommentData();
         var actualComment = commentService.insert(expectedComment.getText(), expectedComment.getBook().getId());
         assertThat(actualComment).isNotNull()
-                .matches(comment -> comment.getId() > 0);
-
-        compareComment(actualComment, expectedComment);
+                .matches(comment -> comment.getId() > 0)
+                .usingRecursiveComparison().isEqualTo(expectedComment);
     }
 
     @DisplayName("должен сохранять измененный комментарий")
@@ -73,14 +73,12 @@ public class CommentServiceImplTest {
         assertThat(commentService.findById(expectedComment.getId()).get().getText()).isNotEqualTo(
                 expectedComment.getText());
 
-        var actualComment = commentService.update(1L, expectedComment.getText(), expectedComment.getBook().getId());
-        assertThat(actualComment).isNotNull()
-                .matches(comment -> comment.getId() > 0);
+        var actualComment = commentService.update(1L, expectedComment.getText());
 
         assertThat(commentService.findById(actualComment.getId()))
                 .isPresent();
-
-        compareComment(actualComment, expectedComment);
+        assertThat(actualComment.getId()).isEqualTo(expectedComment.getId());
+        assertThat(actualComment.getText()).isEqualTo(expectedComment.getText());
     }
 
     @DisplayName("должен удалять комментарий по id ")
@@ -91,11 +89,6 @@ public class CommentServiceImplTest {
 
         var actualComment = commentService.findById(1L);
         assertThat(actualComment).isEmpty();
-    }
-
-    public void compareComment(Comment actualComment, Comment expectedComment) {
-        assertThat(actualComment.getId()).isEqualTo(expectedComment.getId());
-        assertThat(actualComment.getText()).isEqualTo(expectedComment.getText());
     }
 
     private static Book getBookData() {

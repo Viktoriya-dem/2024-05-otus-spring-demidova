@@ -23,7 +23,14 @@ public class JpaBookRepository implements BookRepository {
     public Optional<Book> findById(long id) {
         EntityGraph<?> entityGraph = em.getEntityGraph("book-graph");
         Map<String, Object> params = Map.of("jakarta.persistence.fetchgraph", entityGraph);
-        return Optional.ofNullable(em.find(Book.class, id, params));
+
+        Book book = em.find(Book.class, id, params);
+
+        if (book != null) {
+            book.getGenres().size();
+        }
+
+        return Optional.ofNullable(book);
     }
 
     @Override
@@ -31,8 +38,13 @@ public class JpaBookRepository implements BookRepository {
         EntityGraph<?> entityGraph = em.getEntityGraph("book-graph");
         TypedQuery<Book> query = em.createQuery("select b from Book b ", Book.class);
         query.setHint("javax.persistence.fetchgraph", entityGraph);
+        List<Book> books = query.getResultList();
 
-        return query.getResultList();
+        if (!books.isEmpty()) {
+            books.get(0).getGenres().size();
+        }
+
+        return books;
     }
 
     @Override

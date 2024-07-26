@@ -38,7 +38,10 @@ public class BookServiceImplTest {
         var expectedBook = getBookData();
 
         assertThat(actualBook).isPresent();
-        compareBook(actualBook.get(), expectedBook);
+
+        assertThat(actualBook.get()).isNotNull()
+                .matches(book -> book.getId() > 0)
+                .usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
     @DisplayName("должен загружать список всех книг")
@@ -58,9 +61,8 @@ public class BookServiceImplTest {
         var actualBook = bookService.insert(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
                 expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
         assertThat(actualBook).isNotNull()
-                .matches(book -> book.getId() > 0);
-
-        compareBook(actualBook, expectedBook);
+                .matches(book -> book.getId() > 0)
+                .usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
@@ -77,12 +79,11 @@ public class BookServiceImplTest {
         var actualBook = bookService.update(1L, expectedBook.getTitle(), expectedBook.getAuthor().getId(),
                 expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
         assertThat(actualBook).isNotNull()
-                .matches(book -> book.getId() > 0);
+                .matches(book -> book.getId() > 0)
+                .usingRecursiveComparison().isEqualTo(expectedBook);
 
         assertThat(bookService.findById(actualBook.getId()))
                 .isPresent();
-
-        compareBook(actualBook, expectedBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
@@ -93,17 +94,6 @@ public class BookServiceImplTest {
 
         var actualBook = bookService.findById(1L);
         assertThat(actualBook).isEmpty();
-    }
-
-    public void compareBook(Book actualBook, Book expectedBook) {
-        assertThat(actualBook.getId()).isEqualTo(expectedBook.getId());
-        assertThat(actualBook.getTitle()).isEqualTo(expectedBook.getTitle());
-        assertThat(actualBook.getAuthor().getId()).isEqualTo(expectedBook.getAuthor().getId());
-        assertThat(actualBook.getAuthor().getFullName()).isEqualTo(expectedBook.getAuthor().getFullName());
-        assertThat(actualBook.getGenres().get(0).getId()).isEqualTo(expectedBook.getGenres().get(0).getId());
-        assertThat(actualBook.getGenres().get(0).getName()).isEqualTo(expectedBook.getGenres().get(0).getName());
-        assertThat(actualBook.getGenres().get(1).getId()).isEqualTo(expectedBook.getGenres().get(1).getId());
-        assertThat(actualBook.getGenres().get(1).getName()).isEqualTo(expectedBook.getGenres().get(1).getName());
     }
 
     private static Book getBookData() {

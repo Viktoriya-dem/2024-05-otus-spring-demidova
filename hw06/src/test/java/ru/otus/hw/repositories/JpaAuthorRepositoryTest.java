@@ -29,8 +29,8 @@ class JpaAuthorRepositoryTest {
     @Test
     void shouldReturnCorrectAuthorById() {
         val expectedAuthor = em.find(Author.class, 1L);
-        val actualBook = jpaAuthorRepository.findById(1L);
-        assertThat(actualBook).isPresent()
+        val actualAuthor = jpaAuthorRepository.findById(1L);
+        assertThat(actualAuthor).isPresent()
                 .get()
                 .isEqualTo(expectedAuthor);
     }

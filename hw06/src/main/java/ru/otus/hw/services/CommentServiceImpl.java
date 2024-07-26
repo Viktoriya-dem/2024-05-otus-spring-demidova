@@ -37,8 +37,17 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public Comment update(long id, String text, long bookId) {
-        return save(id, text, bookId);
+    public Comment update(long id, String text) {
+        var comment = commentRepository.findById(id);
+
+        if (comment.isPresent()) {
+            comment.get().setText(text);
+
+            return commentRepository.save(comment.get());
+        } else {
+            throw new EntityNotFoundException("Comment with id %d not found".formatted(id));
+        }
+
     }
 
     @Transactional
@@ -49,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
     Comment save(long id, String text, long bookId) {
         var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
-        var comment  = new Comment(id, text, book);
+        var comment = new Comment(id, text, book);
 
         return commentRepository.save(comment);
     }

@@ -45,8 +45,30 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book update(long id, String title, long authorId, Set<Long> genresIds) {
-        return save(id, title, authorId, genresIds);
-    }
+            Optional<Book> book = bookRepository.findById(id);
+
+            if (book.isEmpty()) {
+                throw new EntityNotFoundException("Book with id %d not found".formatted(id));
+            } else {
+                if (isEmpty(genresIds)) {
+                    throw new IllegalArgumentException("Genres ids must not be null");
+                }
+
+                var author = authorRepository.findById(authorId)
+                        .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found"
+                                .formatted(authorId)));
+                var genres = genreRepository.findAllByIds(genresIds);
+                if (isEmpty(genres) || genresIds.size() != genres.size()) {
+                    throw new EntityNotFoundException("One or all genres with ids %s not found".formatted(genresIds));
+                }
+
+                book.get().setTitle(title);
+                book.get().setAuthor(author);
+                book.get().setGenres(genres);
+
+                return bookRepository.save(book.get());
+            }
+        }
 
     @Override
     @Transactional
