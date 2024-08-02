@@ -71,7 +71,7 @@ public class BookServiceImplTest {
     @Test
     void shouldSaveNewBook() {
         var expectedBook = getNewBookData();
-        var actualBook = bookService.insert(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
+        var actualBook = bookService.create(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
                 expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
         assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() > 0)

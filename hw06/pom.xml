@@ -20,7 +20,6 @@
         <maven.compiler.target>17</maven.compiler.target>
         <spring.shell.version>3.2.4</spring.shell.version>
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
-        <junit.version>5.10.2</junit.version>
         <checkstyle.version>10.15.0</checkstyle.version>
         <checkstyle.config.url>
             https://raw.githubusercontent.com/OtusTeam/Spring/master/checkstyle.xml
@@ -56,7 +55,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
-            <version>${junit.version}</version>
         </dependency>
 
         <dependency>

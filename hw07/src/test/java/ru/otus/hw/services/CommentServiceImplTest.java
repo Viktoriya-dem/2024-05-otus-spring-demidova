@@ -73,10 +73,12 @@ public class CommentServiceImplTest {
     @Test
     void shouldSaveNewComment() {
         var expectedComment = getNewCommentData();
-        var actualComment = commentService.insert(expectedComment.getText(), expectedComment.getBook().getId());
+        var actualComment = commentService.create(expectedComment.getText(), expectedComment.getBook().getId());
         assertThat(actualComment).isNotNull()
-                .matches(comment -> comment.getId() > 0)
-                .usingRecursiveComparison().isEqualTo(expectedComment);
+                .matches(comment -> comment.getId() > 0);
+        assertThat(actualComment.getId()).isEqualTo(expectedComment.getId());
+        assertThat(actualComment.getText()).isEqualTo(expectedComment.getText());
+        assertThat(actualComment.getBook().getId()).isEqualTo(expectedComment.getBook().getId());
     }
 
     @DisplayName("должен сохранять измененный комментарий")
