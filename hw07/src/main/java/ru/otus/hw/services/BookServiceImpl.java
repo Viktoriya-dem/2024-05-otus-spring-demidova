@@ -31,8 +31,6 @@ public class BookServiceImpl implements BookService {
     public Optional<Book> findById(long id) {
         Optional<Book> book = bookRepository.findById(id);
 
-        book.ifPresent(value -> value.getGenres().size());
-
         return book;
     }
 
@@ -41,8 +39,8 @@ public class BookServiceImpl implements BookService {
     public List<Book> findAll() {
         List<Book> books = bookRepository.findAll();
 
-        if (!books.isEmpty()) {
-            books.get(0).getGenres().size();
+        for (Book book: books) {
+            book.getGenres().size();
         }
 
         return books;
