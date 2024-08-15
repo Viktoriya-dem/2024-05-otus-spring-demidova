@@ -8,9 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import ru.otus.hw.events.MongoBookCascadeDeleteEventsListener;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Comment;
 import ru.otus.hw.models.Genre;
 
 import java.util.List;
@@ -20,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Репозиторий для работы с книгами ")
 @DataMongoTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Import(MongoBookCascadeDeleteEventsListener.class)
 class BookRepositoryTest {
 
     @Autowired
@@ -96,9 +100,11 @@ class BookRepositoryTest {
     @Test
     @Order(5)
     void shouldDeleteBook() {
-        assertThat(bookRepository.findById("3")).isPresent();
-        bookRepository.deleteById("3");
-        assertThat(mongoTemplate.findById("3", Book.class)).isNull();
+        assertThat(bookRepository.findById("2")).isPresent();
+        assertThat(mongoTemplate.findById("3", Comment.class)).isNotNull();
+        bookRepository.deleteById("2");
+        assertThat(mongoTemplate.findById("2", Book.class)).isNull();
+        assertThat(mongoTemplate.findById("3", Comment.class)).isNull();
     }
 
     private Author getDbAuthor() {

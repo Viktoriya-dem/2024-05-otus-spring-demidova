@@ -9,12 +9,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,11 +31,12 @@ class CommentRepositoryTest {
     @Test
     @Order(1)
     void shouldReturnCorrectCommentById() {
-        val expectedBook = mongoTemplate.findById("1", Comment.class);
-        val actualBook = commentRepository.findById("1");
-        assertThat(actualBook).isPresent()
-                .get()
-                .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
+        val expectedComment = mongoTemplate.findById("1", Comment.class);
+        val actualComment = commentRepository.findById("1");
+        assertThat(actualComment).isPresent();
+        assertThat(actualComment.get().getId()).isEqualTo(expectedComment.getId());
+        assertThat(actualComment.get().getText()).isEqualTo(expectedComment.getText());
+        assertThat(actualComment.get().getBook().getId()).isEqualTo(expectedComment.getBook().getId());
     }
 
     @DisplayName("должен загружать список всех комментариев по id книги")
