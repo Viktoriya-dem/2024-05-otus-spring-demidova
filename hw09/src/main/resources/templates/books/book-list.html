@@ -2,45 +2,52 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>List of all persons</title>
+    <title>Все книги</title>
     <style type="text/css">
         body {
             padding: 50px;
         }
 
-        .persons {
+        .book {
             border: 1px solid steelblue;
             width: 300px;
             border-collapse: collapse;
         }
 
-        .persons tr td, th {
+        .book tr td, th {
             padding: 5px;
             border: 1px solid steelblue;
         }
 
-        .persons td:last-child, td:first-child {
+        .book td:last-child, td:first-child {
             width: 50px;
         }
     </style>
 </head>
 <body>
-<h3>Persons:</h3>
-
-<table class="persons">
+<a href="#" th:href="@{create}">Добавить книгу</a>
+<br>
+<table class="book">
     <thead>
     <tr>
         <th>ID</th>
-        <th>Name</th>
-        <th>Action</th>
+        <th>Название</th>
+        <th>Автор</th>
+        <th>Жанры</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="book : ${books}">
         <td th:text="${book.id}"></td>
         <td th:text="${book.title}"></td>
+        <td th:text="${book.author.getFullName()}"></td>
+        <td th:text="${book.genres}"></td>
         <td>
-            <a href="edit.html" th:href="@{/books/edit(id=${book.id})}">Edit</a>
+            <a href="edit.html" th:href="@{edit/{id}(id = ${book.id})}">Изменить</a>
+            <form th:action="@{delete}" method="post">
+                <input type="hidden" name="id" th:value="${book.id}"/>
+                <input type="submit" value="Удалить" class="btn btn-danger"/>
+            </form>
         </td>
     </tr>
     </tbody>

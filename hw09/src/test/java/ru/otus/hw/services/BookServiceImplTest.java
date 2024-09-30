@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Сервис работы с книгами должен ")
 @DataJpaTest
@@ -47,12 +48,12 @@ public class BookServiceImplTest {
     @Test
     @DisplayName(" вернуть корректную книгу по id")
     public void shouldReturnCorrectBookById() {
-        Optional<Book> actualBook = bookService.findById(1L);
+        Book actualBook = bookService.findById(1L);
         var expectedBook = getBookData();
 
-        assertThat(actualBook).isPresent();
+        assertThat(actualBook).isNotNull();
 
-        assertThat(actualBook.get()).isNotNull()
+        assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().isEqualTo(expectedBook);
     }
@@ -84,29 +85,20 @@ public class BookServiceImplTest {
         var expectedBook = getBookData();
         expectedBook.setTitle("Change_Title_1");
 
-        assertThat(bookService.findById(expectedBook.getId()))
-                .isPresent();
+        assertThat(bookService.findById(expectedBook.getId())).isNotNull();
 
-        assertThat(bookService.findById(expectedBook.getId()).get().getTitle()).isNotEqualTo(expectedBook.getTitle());
+        assertThat(bookService.findById(expectedBook.getId()).getTitle()).isNotEqualTo(expectedBook.getTitle());
 
-//        var actualBook = bookService.update(1L, expectedBook.getTitle(), expectedBook.getAuthor().getId(),
-//                expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
-//        assertThat(actualBook).isNotNull()
-//                .matches(book -> book.getId() > 0)
-//                .usingRecursiveComparison().isEqualTo(expectedBook);
-//
-//        assertThat(bookService.findById(actualBook.getId()))
-//                .isPresent();
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(bookService.findById(1L)).isPresent();
+        assertThat(bookService.findById(1L)).isNotNull();
         bookService.deleteById(1L);
 
-        var actualBook = bookService.findById(1L);
-        assertThat(actualBook).isEmpty();
+        assertThatThrownBy(() -> bookService.findById(1L)).isInstanceOf(Exception.class)
+                .hasMessage("Book not found");
     }
 
 }

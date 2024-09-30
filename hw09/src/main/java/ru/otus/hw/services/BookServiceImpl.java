@@ -1,8 +1,10 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import mapper.BookMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -12,7 +14,6 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -28,10 +29,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Book> findById(long id) {
-        Optional<Book> book = bookRepository.findById(id);
-
-        return book;
+    public Book findById(long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }
 
     @Override
@@ -39,7 +38,7 @@ public class BookServiceImpl implements BookService {
     public List<Book> findAll() {
         List<Book> books = bookRepository.findAll();
 
-        for (Book book: books) {
+        for (Book book : books) {
             book.getGenres().size();
         }
 
@@ -49,8 +48,27 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public Book save(Book book) {
+        return bookRepository.save(book);
+    }
 
-            return bookRepository.save(book);
+    @Override
+    @Transactional
+    public Book insert(BookDto bookDto) {
+        Book book = BookMapper.INSTANCE.toEntity(bookDto);
+        book.setAuthor(getAuthor(bookDto.getAuthorId()));
+        book.setGenres(getGenres(bookDto.getGenres()));
+
+        return save(book);
+    }
+
+    @Override
+    @Transactional
+    public Book update(BookDto bookDto) {
+        Book book = BookMapper.INSTANCE.toEntity(bookDto);
+        book.setAuthor(getAuthor(bookDto.getAuthorId()));
+        book.setGenres(getGenres(bookDto.getGenres()));
+
+        return save(book);
     }
 
     @Override
