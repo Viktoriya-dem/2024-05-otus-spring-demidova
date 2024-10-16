@@ -8,13 +8,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookDtoFullInfo;
+import ru.otus.hw.mappers.BookMapperImpl;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,32 +21,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DataJpaTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({BookServiceImpl.class})
+@Import({BookServiceImpl.class, BookMapperImpl.class})
 public class BookServiceImplTest {
 
     @Autowired
     private BookService bookService;
 
-    private static Book getBookData() {
-        return new Book(1L, "BookTitle_1", getAuthorData(), getGenreData());
+    private static BookDto getBookData() {
+        return new BookDto(1L, "BookTitle_1", 1L, Set.of(1L, 2L));
     }
 
-    private static Book getNewBookData() {
-        return new Book(4L, "NewBookTitle_1", getAuthorData(), getGenreData());
-    }
-
-    private static Author getAuthorData() {
-        return new Author(1L, "Author_1");
-    }
-
-    private static List<Genre> getGenreData() {
-        return List.of(new Genre(1L, "Genre_1"), new Genre(2L, "Genre_2"));
+    private static BookDto getNewBookData() {
+        return new BookDto(4L, "NewBookTitle_1", 2L, Set.of(2L, 3L));
     }
 
     @Test
     @DisplayName(" вернуть корректную книгу по id")
     public void shouldReturnCorrectBookById() {
-        Book actualBook = bookService.findById(1L);
+        BookDto actualBook = bookService.findById(1L);
         var expectedBook = getBookData();
 
         assertThat(actualBook).isNotNull();
@@ -65,18 +55,19 @@ public class BookServiceImplTest {
 
         assertThat(actualBooks).isNotEmpty()
                 .hasSize(3)
-                .hasOnlyElementsOfType(Book.class);
+                .hasOnlyElementsOfType(BookDtoFullInfo.class);
     }
 
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldSaveNewBook() {
         var expectedBook = getNewBookData();
-//        var actualBook = bookService.create(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
-//                expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
-//        assertThat(actualBook).isNotNull()
-//                .matches(book -> book.getId() > 0)
-//                .usingRecursiveComparison().isEqualTo(expectedBook);
+        var actualBook = bookService.create(expectedBook);
+        expectedBook.setId(4L);
+
+        assertThat(actualBook).isNotNull()
+                .matches(book -> book.getId() > 0)
+                .usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")

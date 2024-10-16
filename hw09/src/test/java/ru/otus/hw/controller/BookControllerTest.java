@@ -1,5 +1,9 @@
 package ru.otus.hw.controller;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.mapstruct.factory.Mappers;
+import ru.otus.hw.dto.BookDtoFullInfo;
+import ru.otus.hw.mappers.BookMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,8 @@ class BookControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    BookMapper bookMapper;
+
     @MockBean
     private BookService bookService;
 
@@ -44,6 +50,11 @@ class BookControllerTest {
     @MockBean
     private CommentService commentService;
 
+    @BeforeEach
+    void setup() {
+        bookMapper = Mappers.getMapper(BookMapper.class);
+    }
+
     Author author = new Author(1L, "Author_1");
     List<Genre> genres = List.of(new Genre(1L, "Genre_1"));
 
@@ -51,8 +62,8 @@ class BookControllerTest {
     @Test
     void shouldReturnAllBook() throws Exception {
         var books = List.of(
-                new Book(1L, "Book1 Title", author, genres),
-                new Book(2L, "Book2 Title", author, genres)
+                new BookDtoFullInfo(1L, "Book1 Title", "Author1", "Genre1"),
+                new BookDtoFullInfo(2L, "Book2 Title", "Author2", "Genre2")
         );
 
         when(bookService.findAll()).thenReturn(books);
@@ -69,7 +80,7 @@ class BookControllerTest {
         BookDto bookDto = new BookDto(null, "Title_1", 1L, Set.of(1L));
         Book book = new Book(1L, "Title_1", author, genres);
 
-        when(bookService.insert(bookDto)).thenReturn(book);
+        when(bookService.create(bookDto)).thenReturn(bookMapper.toDto(book));
 
         mockMvc.perform(post("/books/create").flashAttr("book", bookDto))
                 .andExpect(redirectedUrl("/books/all"));
@@ -81,7 +92,7 @@ class BookControllerTest {
         BookDto bookDto = new BookDto(1L, "Title_1", 1L, Set.of(1L));
         Book book = new Book(1L, "Title_1", author, genres);
 
-        when(bookService.update(bookDto)).thenReturn(book);
+        when(bookService.update(bookDto)).thenReturn(bookMapper.toDto(book));
 
         mockMvc.perform(post("/books/edit").flashAttr("book", bookDto))
                 .andExpect(redirectedUrl("/books/all"));
