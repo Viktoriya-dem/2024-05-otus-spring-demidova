@@ -1,8 +1,12 @@
 package ru.otus.hw.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.factory.Mappers;
-import ru.otus.hw.dto.BookDtoFullInfo;
+import org.springframework.http.MediaType;
+import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.mappers.AuthorMapper;
 import ru.otus.hw.mappers.BookMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.controllers.BookController;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.mappers.GenreMapper;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -25,14 +30,15 @@ import java.util.Set;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("Контроллер книг должен ")
 @WebMvcTest(BookController.class)
 class BookControllerTest {
 
+    @Autowired
+    private ObjectMapper mapper;
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,50 +67,69 @@ class BookControllerTest {
     @DisplayName("вернуть все книги")
     @Test
     void shouldReturnAllBook() throws Exception {
-        var books = List.of(
-                new BookDtoFullInfo(1L, "Book1 Title", "Author1", "Genre1"),
-                new BookDtoFullInfo(2L, "Book2 Title", "Author2", "Genre2")
+        var bookDtos = List.of(
+                getBookDto1(),
+                getBookDto2()
         );
 
-        when(bookService.findAll()).thenReturn(books);
+        when(bookService.findAll()).thenReturn(bookDtos);
 
-        mockMvc.perform(get("/books/all"))
-                .andExpect(view().name("books/book-list"))
-                .andExpect(model().attribute("books", books))
+        mockMvc.perform(get("/books"))
+                .andExpect(content().json(mapper.writeValueAsString(bookDtos)))
                 .andExpect(status().isOk());
     }
 
     @DisplayName("создать книгу")
     @Test
     void shouldCreateBook() throws Exception {
-        BookDto bookDto = new BookDto(null, "Title_1", 1L, Set.of(1L));
-        Book book = new Book(1L, "Title_1", author, genres);
+        BookDto bookDto = getBookDto1();
 
-        when(bookService.create(bookDto)).thenReturn(bookMapper.toDto(book));
+        when(bookService.create(bookDto)).thenReturn(bookDto);
 
-        mockMvc.perform(post("/books/create").flashAttr("book", bookDto))
-                .andExpect(redirectedUrl("/books/all"));
+        var content = post("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(bookDto));
+
+
+        mockMvc.perform(content)
+                .andExpect(status().isCreated());
     }
 
     @DisplayName("обновить книгу")
     @Test
     void shouldUpdateBook() throws Exception {
-        BookDto bookDto = new BookDto(1L, "Title_1", 1L, Set.of(1L));
-        Book book = new Book(1L, "Title_1", author, genres);
+        BookDto bookDto = getBookDto1();
+        Book book = new Book(1L, "Book_Title_1", author, genres);
 
-        when(bookService.update(bookDto)).thenReturn(bookMapper.toDto(book));
+        when(bookService.update(bookDto)).thenReturn(bookDto);
 
-        mockMvc.perform(post("/books/edit").flashAttr("book", bookDto))
-                .andExpect(redirectedUrl("/books/all"));
+        var content = patch("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(bookDto));
+
+        mockMvc.perform(content)
+                .andExpect(status().isOk());
     }
 
     @DisplayName("удалить книгу")
     @Test
     void shouldDeleteBook() throws Exception {
         doNothing().when(bookService);
-        mockMvc.perform(post("/books/delete")
-                        .param("id", "1"))
-                .andExpect(redirectedUrl("/books/all"));
+
+        var content = delete("/books/%d" .formatted(1));
+
+        mockMvc.perform(content)
+                .andExpect(status().isNoContent());
+    }
+
+    public BookDto getBookDto1() {
+        return new BookDto(1L, "Book_Title_1", new AuthorDto(1L, "Author_1"),
+                Set.of(new GenreDto(1L, "Genre_1")));
+    }
+
+    public BookDto getBookDto2() {
+        return new BookDto(2L, "Book_Title_2", new AuthorDto(2L, "Author_2"),
+                Set.of(new GenreDto(3L, "Genre3"), new GenreDto(4L, "Genre4")));
     }
 
 }

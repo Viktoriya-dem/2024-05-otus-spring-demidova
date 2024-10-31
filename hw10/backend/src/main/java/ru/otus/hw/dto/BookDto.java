@@ -14,15 +14,13 @@ import java.util.Set;
 @NoArgsConstructor
 public class BookDto {
 
-    private Long id;
+    private long id;
 
-    @NotBlank(message = "Title can't be empty")
+    @NotBlank(message = "Заполните наименование")
     private String title;
 
-    @NotNull(message = "Author can't be empty")
-    private Long authorId;
+    @NotNull(message = "Заполните автора")
+    private AuthorDto author;
 
-    @NotNull(message = "Genres can't be empty")
-    @NotEmpty(message = "Genres can't be empty")
-    private Set<Long> genres;
+    private Set<@NotNull(message = "Заполните жанры")GenreDto> genres;
 }

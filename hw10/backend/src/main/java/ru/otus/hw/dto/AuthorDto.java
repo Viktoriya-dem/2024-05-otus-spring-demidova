@@ -4,17 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookDtoFullInfo {
+public class AuthorDto {
 
-    private Long id;
+    private long id;
 
-    private String title;
-
-    private String authorName;
-
-    private String genres;
+    private String fullName;
 }

@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.mappers.BookMapper;
-import ru.otus.hw.mappers.BookMapperImpl;
+import ru.otus.hw.dto.CommentDto;
+import ru.otus.hw.mappers.*;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
@@ -26,16 +26,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DataJpaTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Import({CommentServiceImpl.class, BookMapperImpl.class})
+@Import({CommentServiceImpl.class, BookMapperImpl.class, CommentMapperImpl.class, AuthorMapperImpl.class,
+GenreMapperImpl.class})
 public class CommentServiceImplTest {
 
     @Autowired
     private CommentService commentService;
 
     BookMapper bookMapper;
+
+    CommentMapper commentMapper;
     @BeforeEach
     void setup() {
         bookMapper = Mappers.getMapper(BookMapper.class);
+        commentMapper = Mappers.getMapper(CommentMapper.class);
     }
 
     private static Book getBookData() {
@@ -54,20 +58,10 @@ public class CommentServiceImplTest {
         return new Comment(1L, "Comment_1_Book_1", getBookData());
     }
 
-    private static Comment getNewCommentData() {
-        return new Comment(4L, "New_Comment_1_Book_1", getBookData());
+    private static CommentDto getNewCommentData() {
+        return new CommentDto(4L, "New_Comment_1_Book_1", 1L);
     }
 
-    @Test
-    @DisplayName(" вернуть корректный комментарий по id")
-    public void shouldReturnCorrectCommentById() {
-        Comment actualComment = commentService.findById(1L);
-        var expectedComment = getCommentData();
-
-        assertThat(actualComment).isNotNull();
-        assertThat(actualComment.getId()).isEqualTo(expectedComment.getId());
-        assertThat(actualComment.getText()).isEqualTo(expectedComment.getText());
-    }
 
     @DisplayName("должен загружать список всех комментариев по id книги")
     @Test
@@ -76,19 +70,19 @@ public class CommentServiceImplTest {
 
         assertThat(actualComments).isNotEmpty()
                 .hasSize(2)
-                .hasOnlyElementsOfType(Comment.class);
+                .hasOnlyElementsOfType(CommentDto.class);
     }
 
     @DisplayName("должен сохранять новый комментарий")
     @Test
     void shouldSaveNewComment() {
         var expectedComment = getNewCommentData();
-        var actualComment = commentService.create(expectedComment.getText(), expectedComment.getBook().getId());
+        var actualComment = commentService.create(expectedComment.getText(), expectedComment.getBookId());
         assertThat(actualComment).isNotNull()
                 .matches(comment -> comment.getId() > 0);
         assertThat(actualComment.getId()).isEqualTo(expectedComment.getId());
         assertThat(actualComment.getText()).isEqualTo(expectedComment.getText());
-        assertThat(actualComment.getBook().getId()).isEqualTo(expectedComment.getBook().getId());
+        assertThat(actualComment.getBookId()).isEqualTo(expectedComment.getBookId());
     }
 
     @DisplayName("должен сохранять измененный комментарий")

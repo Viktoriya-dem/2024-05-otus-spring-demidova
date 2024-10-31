@@ -3,9 +3,10 @@ package ru.otus.hw.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
+import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.dto.BookDtoFullInfo;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -17,19 +18,12 @@ import java.util.stream.Collectors;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = SPRING, uses = {AuthorMapper.class, GenreMapper.class})
 @Component
 public interface BookMapper {
 
-    @Mapping(target = "authorId", source = "author.id")
-    @Mapping(target = "genres", qualifiedByName = "getGenresIds", source = "genres")
+    @Mapping(target = "id", source = "id")
     BookDto toDto(Book book);
-
-    @Mapping(target = "authorName", source = "author.fullName")
-    @Mapping(target = "genres", qualifiedByName = "getGenresNames", source = "genres")
-    BookDtoFullInfo toDtoFullInfo(Book book);
-
-    List<BookDtoFullInfo> toDtoFullInfo(List<Book> book);
 
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "genres", ignore = true)

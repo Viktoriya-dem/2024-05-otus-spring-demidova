@@ -7,54 +7,54 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.CommentDto;
 import ru.otus.hw.services.BookService;
+import ru.otus.hw.services.CommentService;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class BookController {
+public class CommentController {
 
     private final BookService bookService;
 
-    @GetMapping("/books")
-    public List<BookDto> getAllBooks() {
+    private final CommentService commentService;
 
-        return bookService.findAll();
+
+    @GetMapping("/comments/book/{id}")
+    public List<CommentDto> getComments(@PathVariable long id) {
+        BookDto bookDto = bookService.findById(id);
+
+        return commentService.findAllByBookId(id);
     }
 
-    @GetMapping("/books/{id}")
-    public BookDto getAllBooks(@PathVariable long id) {
-
-        return bookService.findById(id);
-    }
-
-    @PostMapping("/books")
-    public ResponseEntity<String> createBook(@RequestBody @Valid BookDto bookDto, BindingResult bindingResult) {
+    @PostMapping("/comments")
+    public ResponseEntity<String> createComment(@RequestBody @Valid CommentDto commentDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
         }
 
-        bookService.create(bookDto);
+        commentService.create(commentDto.getText(), commentDto.getBookId());
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/books")
-    public ResponseEntity<String> updateBook(@RequestBody @Valid BookDto bookDto, BindingResult bindingResult) {
+    @PatchMapping("/comments")
+    public ResponseEntity<String> updateComment(@RequestBody @Valid CommentDto commentDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
         }
 
-        bookService.update(bookDto);
+        commentService.update(commentDto.getId(), commentDto.getText());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/books/{id}")
+    @DeleteMapping("/comments/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(@PathVariable long id) {
-        bookService.deleteById(id);
+    public void deleteComment(@PathVariable long id) {
+        commentService.deleteById(id);
     }
 
 }

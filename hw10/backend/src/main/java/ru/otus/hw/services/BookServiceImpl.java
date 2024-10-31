@@ -1,12 +1,12 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.mappers.BookMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.dto.BookDtoFullInfo;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -17,6 +17,7 @@ import ru.otus.hw.repositories.GenreRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -40,21 +41,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookDtoFullInfo> findAll() {
+    public List<BookDto> findAll() {
         List<Book> books = bookRepository.findAll();
 
-        for (Book book : books) {
-            book.getGenres().size();
-        }
-
-        return bookMapper.toDtoFullInfo(books);
+        return bookMapper.toDto(books);
     }
 
     @Override
     @Transactional
     public BookDto create(BookDto bookDto) {
         bookDto.setId(0L);
-        Book book = bookMapper.toEntity(bookDto, getAuthor(bookDto.getAuthorId()), getGenres(bookDto.getGenres()));
+        Book book = bookMapper.toEntity(bookDto, getAuthor(bookDto.getAuthor().getId()), getGenres(bookDto.getGenres()));
 
         return bookMapper.toDto(bookRepository.save(book));
     }
@@ -62,15 +59,13 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto update(BookDto bookDto) {
-        Optional<Book> optionalBook = bookRepository.findById(bookDto.getId());
+        Book book = bookRepository.findById(bookDto.getId())
+                .orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(bookDto.getId())));
+        book.setTitle(bookDto.getTitle());
+        book.setAuthor(getAuthor(bookDto.getAuthor().getId()));
+        book.setGenres(getGenres(bookDto.getGenres()));
 
-        if (optionalBook.isPresent()) {
-            Book book = bookMapper.toEntity(bookDto, getAuthor(bookDto.getAuthorId()), getGenres(bookDto.getGenres()));
-
-            return bookMapper.toDto(bookRepository.save(book));
-        } else {
-            throw new NotFoundException("Book not found");
-        }
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
@@ -84,15 +79,15 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new NotFoundException("Author with id %d not found".formatted(authorId)));
     }
 
-    private List<Genre> getGenres(Set<Long> genresIds) {
-        if (isEmpty(genresIds)) {
+    private List<Genre> getGenres(Set<GenreDto> genresDto) {
+        if (isEmpty(genresDto)) {
             throw new IllegalArgumentException("Genres ids must not be null");
         }
 
-        List<Genre> genres = genreRepository.findAllByIdIn(genresIds);
+        List<Genre> genres = genreRepository.findAllByIdIn(genresDto.stream().map(GenreDto::getId).collect(Collectors.toSet()));
 
-        if (isEmpty(genres) || genresIds.size() != genres.size()) {
-            throw new NotFoundException("One or all genres with ids %s not found".formatted(genresIds));
+        if (isEmpty(genres) || genresDto.size() != genres.size()) {
+            throw new NotFoundException("One or all genres with ids %s not found".formatted(genresDto));
         }
 
         return genres;
