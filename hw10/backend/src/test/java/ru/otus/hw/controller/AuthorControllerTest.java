@@ -28,6 +28,7 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -61,13 +62,13 @@ class AuthorControllerTest {
     @Test
     void shouldReturnAllAuthors() throws Exception {
         var authorDtos = List.of(
-                new AuthorDto(1L, "Author_1"),
-                new AuthorDto(2L, "Author_2")
+                new AuthorDto(UUID.fromString("5f7019b2-382f-41fa-a8af-b46dc3e05252"), "Author_1"),
+                new AuthorDto(UUID.fromString("30df0652-0b5d-40af-86d9-cd336b836648"), "Author_2")
         );
 
         when(authorService.findAll()).thenReturn(authorDtos);
 
-        mockMvc.perform(get("/authors"))
+        mockMvc.perform(get("/api/authors"))
                 .andExpect(content().json(mapper.writeValueAsString(authorDtos)))
                 .andExpect(status().isOk());
     }

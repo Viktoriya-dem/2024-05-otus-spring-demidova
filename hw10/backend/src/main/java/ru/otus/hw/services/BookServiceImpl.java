@@ -17,6 +17,7 @@ import ru.otus.hw.repositories.GenreRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -34,7 +35,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    public BookDto findById(long id) {
+    public BookDto findById(UUID id) {
         Book book = bookRepository.findById(id).orElseThrow(() -> new NotFoundException("Book not found"));
         return bookMapper.toDto(book);
     }
@@ -50,7 +51,6 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookDto create(BookDto bookDto) {
-        bookDto.setId(0L);
         Book book = bookMapper.toEntity(bookDto, getAuthor(bookDto.getAuthor().getId()), getGenres(bookDto.getGenres()));
 
         return bookMapper.toDto(bookRepository.save(book));
@@ -60,7 +60,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookDto update(BookDto bookDto) {
         Book book = bookRepository.findById(bookDto.getId())
-                .orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(bookDto.getId())));
+                .orElseThrow(() -> new NotFoundException("Book with id %s not found".formatted(bookDto.getId())));
         book.setTitle(bookDto.getTitle());
         book.setAuthor(getAuthor(bookDto.getAuthor().getId()));
         book.setGenres(getGenres(bookDto.getGenres()));
@@ -70,13 +70,13 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public void deleteById(long id) {
+    public void deleteById(UUID id) {
         bookRepository.deleteById(id);
     }
 
-    private Author getAuthor(long authorId) {
+    private Author getAuthor(UUID authorId) {
         return authorRepository.findById(authorId)
-                .orElseThrow(() -> new NotFoundException("Author with id %d not found".formatted(authorId)));
+                .orElseThrow(() -> new NotFoundException("Author with id %s not found".formatted(authorId)));
     }
 
     private List<Genre> getGenres(Set<GenreDto> genresDto) {

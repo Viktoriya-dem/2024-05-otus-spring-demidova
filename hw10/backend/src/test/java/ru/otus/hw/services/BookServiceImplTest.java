@@ -16,6 +16,7 @@ import ru.otus.hw.mappers.BookMapperImpl;
 import ru.otus.hw.mappers.GenreMapperImpl;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -30,26 +31,29 @@ public class BookServiceImplTest {
     @Autowired
     private BookService bookService;
 
-    public BookDto getBookDto1(){
-        return new BookDto(1L, "BookTitle_1", new AuthorDto(1L, "Author_1"),
-                Set.of(new GenreDto(1L, "Genre_1"), new GenreDto(2L, "Genre_2")));
+    public BookDto getBookDto1() {
+        return new BookDto(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"), "BookTitle_1",
+                new AuthorDto(UUID.fromString("5f7019b2-382f-41fa-a8af-b46dc3e05252"), "Author_1"),
+                Set.of(new GenreDto(UUID.fromString("9fccd731-27a2-4639-b1f6-648087ef744b"), "Genre_1"),
+                        new GenreDto(UUID.fromString("980fab3b-338d-45e7-83b6-29b98d1c4b02"), "Genre_2")));
     }
 
     private static BookDto getNewBookData() {
-        return new BookDto(4L, "NewBookTitle_1", new AuthorDto(1L, "Author_1"),
-                Set.of(new GenreDto(1L, "Genre_1")));
+        return new BookDto(UUID.fromString("a36adce6-4b88-4ee8-a974-b3d4bd5fb3d8"), "NewBookTitle_1",
+                new AuthorDto(UUID.fromString("5f7019b2-382f-41fa-a8af-b46dc3e05252"), "Author_1"),
+                Set.of(new GenreDto(UUID.fromString("9fccd731-27a2-4639-b1f6-648087ef744b"), "Genre_1")));
     }
 
     @Test
     @DisplayName(" вернуть корректную книгу по id")
     public void shouldReturnCorrectBookById() {
-        BookDto actualBook = bookService.findById(1L);
+        BookDto actualBook = bookService.findById(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"));
         var expectedBook = getBookDto1();
 
         assertThat(actualBook).isNotNull();
 
         assertThat(actualBook).isNotNull()
-                .matches(book -> book.getId() > 0)
+                .matches(book -> book.getId() != null)
                 .usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
@@ -68,10 +72,9 @@ public class BookServiceImplTest {
     void shouldSaveNewBook() {
         var expectedBook = getNewBookData();
         var actualBook = bookService.create(expectedBook);
-        expectedBook.setId(4L);
 
         assertThat(actualBook).isNotNull()
-                .matches(book -> book.getId() > 0)
+                .matches(book -> book.getId() != null)
                 .usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
@@ -90,11 +93,11 @@ public class BookServiceImplTest {
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(bookService.findById(1L)).isNotNull();
-        bookService.deleteById(1L);
+        assertThat(bookService.findById(UUID.fromString("5cf0a359-82e1-4ddf-9c5c-d54bb50fefe1"))).isNotNull();
+        bookService.deleteById(UUID.fromString("5cf0a359-82e1-4ddf-9c5c-d54bb50fefe1"));
 
-        assertThatThrownBy(() -> bookService.findById(1L)).isInstanceOf(Exception.class)
-                .hasMessage("Book not found");
+        assertThatThrownBy(() -> bookService.findById(UUID.fromString("5cf0a359-82e1-4ddf-9c5c-d54bb50fefe1")))
+                .isInstanceOf(Exception.class).hasMessage("Book not found");
     }
 
 }

@@ -12,6 +12,7 @@ import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.CommentService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,25 +23,25 @@ public class CommentController {
     private final CommentService commentService;
 
 
-    @GetMapping("/comments/book/{id}")
-    public List<CommentDto> getComments(@PathVariable long id) {
+    @GetMapping("/api/comments/book/{id}")
+    public List<CommentDto> getComments(@PathVariable UUID id) {
         BookDto bookDto = bookService.findById(id);
 
         return commentService.findAllByBookId(id);
     }
 
-    @PostMapping("/comments")
+    @PostMapping("/api/comments")
     public ResponseEntity<String> createComment(@RequestBody @Valid CommentDto commentDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
         }
 
-        commentService.create(commentDto.getText(), commentDto.getBookId());
+        commentService.create(commentDto.getId(), commentDto.getText(), commentDto.getBookId());
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/comments")
+    @PatchMapping("/api/comments")
     public ResponseEntity<String> updateComment(@RequestBody @Valid CommentDto commentDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
@@ -51,9 +52,9 @@ public class CommentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/comments/{id}")
+    @DeleteMapping("/api/comments/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable long id) {
+    public void deleteComment(@PathVariable UUID id) {
         commentService.deleteById(id);
     }
 

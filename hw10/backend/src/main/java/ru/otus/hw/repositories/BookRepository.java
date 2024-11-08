@@ -6,12 +6,13 @@ import ru.otus.hw.models.Book;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
+public interface BookRepository extends JpaRepository<Book, UUID> {
 
     @Override
     @EntityGraph("book-all-graph")
-    Optional<Book> findById(Long id);
+    Optional<Book> findById(UUID id);
 
     @Override
     @EntityGraph("book-author-graph")

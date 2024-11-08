@@ -8,13 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookDto {
 
-    private long id;
+    private UUID id;
 
     @NotBlank(message = "Заполните наименование")
     private String title;

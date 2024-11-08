@@ -5,8 +5,9 @@ import ru.otus.hw.models.Genre;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-public interface GenreRepository extends JpaRepository<Genre, Long> {
+public interface GenreRepository extends JpaRepository<Genre, UUID> {
 
-    List<Genre> findAllByIdIn(Set<Long> ids);
+    List<Genre> findAllByIdIn(Set<UUID> ids);
 }

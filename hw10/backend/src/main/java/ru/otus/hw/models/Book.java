@@ -22,6 +22,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,9 +34,9 @@ import java.util.List;
 @NamedEntityGraph(name = "book-all-graph", attributeNodes = {@NamedAttributeNode("author"),
         @NamedAttributeNode("genres")})
 public class Book {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private UUID id;
 
     @Column(name = "title", nullable = false)
     private String title;

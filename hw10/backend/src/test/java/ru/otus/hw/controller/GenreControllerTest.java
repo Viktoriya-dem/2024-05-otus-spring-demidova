@@ -19,6 +19,7 @@ import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,13 +52,13 @@ class GenreControllerTest {
     @Test
     void shouldReturnAllGenres() throws Exception {
         var genreDtos = List.of(
-                new GenreDto(1L, "Genre_1"),
-                new GenreDto(2L, "Genre_2")
+                new GenreDto(UUID.fromString("9fccd731-27a2-4639-b1f6-648087ef744b"), "Genre_1"),
+                new GenreDto(UUID.fromString("980fab3b-338d-45e7-83b6-29b98d1c4b02"), "Genre_2")
         );
 
         when(genreService.findAll()).thenReturn(genreDtos);
 
-        mockMvc.perform(get("/genres"))
+        mockMvc.perform(get("/api/genres"))
                 .andExpect(content().json(mapper.writeValueAsString(genreDtos)))
                 .andExpect(status().isOk());
     }

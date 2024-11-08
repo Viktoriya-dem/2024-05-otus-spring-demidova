@@ -10,6 +10,7 @@ import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.services.BookService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,19 +18,19 @@ public class BookController {
 
     private final BookService bookService;
 
-    @GetMapping("/books")
+    @GetMapping("/api/books")
     public List<BookDto> getAllBooks() {
 
         return bookService.findAll();
     }
 
-    @GetMapping("/books/{id}")
-    public BookDto getAllBooks(@PathVariable long id) {
+    @GetMapping("/api/books/{id}")
+    public BookDto getBookById(@PathVariable UUID id) {
 
         return bookService.findById(id);
     }
 
-    @PostMapping("/books")
+    @PostMapping("/api/books")
     public ResponseEntity<String> createBook(@RequestBody @Valid BookDto bookDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
@@ -40,7 +41,7 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PatchMapping("/books")
+    @PatchMapping("/api/books")
     public ResponseEntity<String> updateBook(@RequestBody @Valid BookDto bookDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
@@ -51,9 +52,9 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/books/{id}")
+    @DeleteMapping("/api/books/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBook(@PathVariable long id) {
+    public void deleteBook(@PathVariable UUID id) {
         bookService.deleteById(id);
     }
 

@@ -11,6 +11,7 @@ import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -24,27 +25,27 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Comment findById(long id) {
+    public Comment findById(UUID id) {
         return commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment not found"));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommentDto> findAllByBookId(long bookId) {
+    public List<CommentDto> findAllByBookId(UUID bookId) {
         return commentMapper.toDto(commentRepository.findAllByBookId(bookId));
     }
 
     @Transactional
-    public CommentDto create(String text, long bookId) {
+    public CommentDto create(UUID id, String text, UUID bookId) {
         var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(bookId)));
-        var comment = new Comment(0, text, book);
+        var comment = new Comment(id, text, book);
 
         return commentMapper.toDto(commentRepository.save(comment));
     }
 
     @Transactional
-    public CommentDto update(long id, String text) {
+    public CommentDto update(UUID id, String text) {
         var comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Comment with id %d not found".formatted(id)));
         comment.setText(text);
@@ -54,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public void deleteById(long id) {
+    public void deleteById(UUID id) {
         commentRepository.deleteById(id);
     }
 }

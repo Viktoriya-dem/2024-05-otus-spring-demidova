@@ -29,6 +29,7 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -63,13 +64,16 @@ class CommentControllerTest {
     @Test
     void shouldReturnAllComments() throws Exception {
         var commentDtos = List.of(
-                new CommentDto(1L, "Comment_1", 1L),
-                new CommentDto(2L, "Comment_2", 1L)
+                new CommentDto(UUID.fromString("60ebe253-6b1f-410f-b159-8f51a6026ec3"), "Comment_1",
+                        UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848")),
+                new CommentDto(UUID.fromString("cbee18e7-f448-479d-b8d7-2048c087b5a0"), "Comment_2",
+                        UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"))
         );
 
-        when(commentService.findAllByBookId(1L)).thenReturn(commentDtos);
+        when(commentService.findAllByBookId(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848")))
+                .thenReturn(commentDtos);
 
-        mockMvc.perform(get("/comments/book/%d" .formatted(1)))
+        mockMvc.perform(get("/api/comments/book/%s" .formatted("8b0f427f-1365-4883-8834-c6b25515b848")))
                 .andExpect(content().json(mapper.writeValueAsString(commentDtos)))
                 .andExpect(status().isOk());
     }
@@ -77,11 +81,13 @@ class CommentControllerTest {
     @DisplayName("создать комментарий")
     @Test
     void shouldCreateComment() throws Exception {
-        var commentDto = new CommentDto(2L, "Comment_2", 1L);
+        var commentDto = new CommentDto(UUID.fromString("cbee18e7-f448-479d-b8d7-2048c087b5a0"), "Comment_2",
+                UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"));
 
-        when(commentService.create(commentDto.getText(), commentDto.getBookId())).thenReturn(commentDto);
+        when(commentService.create(UUID.fromString("cbee18e7-f448-479d-b8d7-2048c087b5a0"),
+                commentDto.getText(), commentDto.getBookId())).thenReturn(commentDto);
 
-        var content = post("/comments")
+        var content = post("/api/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentDto));
 
@@ -93,11 +99,12 @@ class CommentControllerTest {
     @DisplayName("обновить комментарий")
     @Test
     void shouldUpdateComment() throws Exception {
-        var commentDto = new CommentDto(2L, "Comment_2", 1L);
+        var commentDto = new CommentDto(UUID.fromString("cbee18e7-f448-479d-b8d7-2048c087b5a0"), "Comment_2",
+                UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"));
 
         when(commentService.update(commentDto.getId(), commentDto.getText())).thenReturn(commentDto);
 
-        var content = patch("/comments")
+        var content = patch("/api/comments")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentDto));
 
@@ -110,7 +117,8 @@ class CommentControllerTest {
     void shouldDeleteComment() throws Exception {
         doNothing().when(commentService);
 
-        var content = delete("/comments/%d" .formatted(1));
+        var content = delete("/api/comments/%s"
+                .formatted("45da304-56a5-4ff9-a982-1713a42a3c56"));
 
         mockMvc.perform(content)
                 .andExpect(status().isNoContent());

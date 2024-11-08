@@ -27,6 +27,7 @@ import ru.otus.hw.services.GenreService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -61,8 +62,9 @@ class BookControllerTest {
         bookMapper = Mappers.getMapper(BookMapper.class);
     }
 
-    Author author = new Author(1L, "Author_1");
-    List<Genre> genres = List.of(new Genre(1L, "Genre_1"));
+    Author author = new Author(UUID.fromString("5f7019b2-382f-41fa-a8af-b46dc3e05252"), "Author_1");
+    List<Genre> genres = List.of(new Genre(UUID.fromString("9fccd731-27a2-4639-b1f6-648087ef744b"),
+            "Genre_1"));
 
     @DisplayName("вернуть все книги")
     @Test
@@ -74,7 +76,7 @@ class BookControllerTest {
 
         when(bookService.findAll()).thenReturn(bookDtos);
 
-        mockMvc.perform(get("/books"))
+        mockMvc.perform(get("/api/books"))
                 .andExpect(content().json(mapper.writeValueAsString(bookDtos)))
                 .andExpect(status().isOk());
     }
@@ -86,7 +88,7 @@ class BookControllerTest {
 
         when(bookService.create(bookDto)).thenReturn(bookDto);
 
-        var content = post("/books")
+        var content = post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(bookDto));
 
@@ -99,11 +101,12 @@ class BookControllerTest {
     @Test
     void shouldUpdateBook() throws Exception {
         BookDto bookDto = getBookDto1();
-        Book book = new Book(1L, "Book_Title_1", author, genres);
+        Book book = new Book(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"),
+                "Book_Title_1", author, genres);
 
         when(bookService.update(bookDto)).thenReturn(bookDto);
 
-        var content = patch("/books")
+        var content = patch("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(bookDto));
 
@@ -116,20 +119,24 @@ class BookControllerTest {
     void shouldDeleteBook() throws Exception {
         doNothing().when(bookService);
 
-        var content = delete("/books/%d" .formatted(1));
+        var content = delete("/api/books/%s"
+                .formatted("8b0f427f-1365-4883-8834-c6b25515b848"));
 
         mockMvc.perform(content)
                 .andExpect(status().isNoContent());
     }
 
     public BookDto getBookDto1() {
-        return new BookDto(1L, "Book_Title_1", new AuthorDto(1L, "Author_1"),
-                Set.of(new GenreDto(1L, "Genre_1")));
+        return new BookDto(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"), "Book_Title_1",
+                new AuthorDto(UUID.fromString("5f7019b2-382f-41fa-a8af-b46dc3e05252"), "Author_1"),
+                Set.of(new GenreDto(UUID.fromString("9fccd731-27a2-4639-b1f6-648087ef744b"), "Genre_1")));
     }
 
     public BookDto getBookDto2() {
-        return new BookDto(2L, "Book_Title_2", new AuthorDto(2L, "Author_2"),
-                Set.of(new GenreDto(3L, "Genre3"), new GenreDto(4L, "Genre4")));
+        return new BookDto(UUID.fromString("f7b16ec4-3e96-4693-b761-db978faf0087"), "Book_Title_2",
+                new AuthorDto(UUID.fromString("30df0652-0b5d-40af-86d9-cd336b836648"), "Author_2"),
+                Set.of(new GenreDto(UUID.fromString("66f51d2d-e6b7-4602-8b21-31439ea1f721"), "Genre3"),
+                        new GenreDto(UUID.fromString("dc511c5a-1436-4b96-b727-3c88b1e423d4"), "Genre4")));
     }
 
 }

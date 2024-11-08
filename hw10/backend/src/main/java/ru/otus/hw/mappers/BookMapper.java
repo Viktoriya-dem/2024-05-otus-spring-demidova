@@ -14,6 +14,7 @@ import ru.otus.hw.models.Genre;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
@@ -40,7 +41,7 @@ public interface BookMapper {
     List<BookDto> toDto(List<Book> book);
 
     @Named("getGenresIds")
-    default Set<Long> getGenresIds(List<Genre> genres) {
+    default Set<UUID> getGenresIds(List<Genre> genres) {
         return genres.stream().map(Genre::getId).collect(Collectors.toSet());
     }
 
