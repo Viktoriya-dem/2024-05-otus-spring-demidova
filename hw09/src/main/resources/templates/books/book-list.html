@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Все книги</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .book {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .book tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .book td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+<a href="#" th:href="@{create}">Добавить книгу</a>
+<br>
+<table class="book">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Автор</th>
+        <th>Жанры</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}"></td>
+        <td th:text="${book.title}"></td>
+        <td th:text="${book.authorName}"></td>
+        <td th:text="${book.genres}"></td>
+        <td>
+            <a href="edit.html" th:href="@{edit/{id}(id = ${book.id})}">Изменить</a>
+            <form th:action="@{delete}" method="post">
+                <input type="hidden" name="id" th:value="${book.id}"/>
+                <input type="submit" value="Удалить" class="btn btn-danger"/>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
