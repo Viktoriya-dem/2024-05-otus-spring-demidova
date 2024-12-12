@@ -3,9 +3,8 @@ package ru.otus.hw.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -32,6 +31,18 @@ public interface BookMapper {
         Book book = new Book();
         book.setId(bookDto.getId());
         book.setTitle(bookDto.getTitle());
+        book.setAuthor(author);
+        book.setGenres(genres);
+
+        return book;
+    }
+
+    @Mapping(target = "author", ignore = true)
+    @Mapping(target = "genres", ignore = true)
+    default Book toEntity(BookCreateDto bookCreateDto, Author author, List<Genre> genres) {
+        Book book = new Book();
+        book.setId(bookCreateDto.getId());
+        book.setTitle(bookCreateDto.getTitle());
         book.setAuthor(author);
         book.setGenres(genres);
 

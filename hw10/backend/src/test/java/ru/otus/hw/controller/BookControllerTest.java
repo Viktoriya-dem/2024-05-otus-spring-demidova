@@ -5,8 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.MediaType;
 import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookCreateDto;
+import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.dto.GenreDto;
-import ru.otus.hw.mappers.AuthorMapper;
+import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.mappers.BookMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.controllers.BookController;
 import ru.otus.hw.dto.BookDto;
-import ru.otus.hw.mappers.GenreMapper;
 import ru.otus.hw.models.Author;
-import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
@@ -85,8 +85,10 @@ class BookControllerTest {
     @Test
     void shouldCreateBook() throws Exception {
         BookDto bookDto = getBookDto1();
+        BookCreateDto bookCreateDto = new BookCreateDto(bookDto.getId(),
+                bookDto.getTitle(), bookDto.getAuthor(), bookDto.getGenres());
 
-        when(bookService.create(bookDto)).thenReturn(bookDto);
+        when(bookService.create(bookCreateDto)).thenReturn(bookDto);
 
         var content = post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -101,10 +103,10 @@ class BookControllerTest {
     @Test
     void shouldUpdateBook() throws Exception {
         BookDto bookDto = getBookDto1();
-        Book book = new Book(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"),
-                "Book_Title_1", author, genres);
+        BookUpdateDto bookUpdateDto = new BookUpdateDto(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"),
+                "Book_Title_1", bookDto.getAuthor(), bookDto.getGenres());
 
-        when(bookService.update(bookDto)).thenReturn(bookDto);
+        when(bookService.update(bookUpdateDto)).thenReturn(bookDto);
 
         var content = patch("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -124,6 +126,41 @@ class BookControllerTest {
 
         mockMvc.perform(content)
                 .andExpect(status().isNoContent());
+    }
+
+    @DisplayName("вернуть ошибку 404 при неверном id книги")
+    @Test
+    void shouldNotUpdateBookWhenWrongBookId() throws Exception {
+        BookDto bookDto = getBookDto1();
+        BookUpdateDto bookUpdateDto = new BookUpdateDto(UUID.fromString("8b0f427f-1365-4883-8834-c6b25515b848"),
+                "Book_Title_1", bookDto.getAuthor(), bookDto.getGenres());
+
+        when(bookService.update(bookUpdateDto)).thenThrow(new NotFoundException("Book not found"));
+
+        var content = patch("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(bookDto));
+
+        mockMvc.perform(content)
+                .andExpect(status().isNotFound());
+    }
+
+    @DisplayName("вернуть ошибку 400 при отсутствии id автора")
+    @Test
+    void shouldNotUpdateBookWhenWrongAuthorId() throws Exception {
+        BookDto bookDto = getBookDto1();
+        bookDto.setId(null);
+        BookUpdateDto bookUpdateDto = new BookUpdateDto(null,
+                "Book_Title_1", bookDto.getAuthor(), bookDto.getGenres());
+
+        when(bookService.update(bookUpdateDto)).thenReturn(bookDto);
+
+        var content = patch("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(bookDto));
+
+        mockMvc.perform(content)
+                .andExpect(status().isBadRequest());
     }
 
     public BookDto getBookDto1() {

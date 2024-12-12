@@ -102,7 +102,7 @@ export const createBook = (payload: any) => async (dispatch: Function) => {
 export const editBookContent = (payload: any) => async (dispatch: Function) => {
   dispatch(editBookRequest());
   try {
-    await fetch(`/api/books`, {
+    await fetch(`/api/books/${payload.id}`, {
       headers: {
         "Content-Type": "application/json",
       },

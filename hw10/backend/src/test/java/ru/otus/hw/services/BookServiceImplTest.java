@@ -9,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.AuthorDto;
+import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
 import ru.otus.hw.mappers.AuthorMapperImpl;
@@ -71,7 +72,10 @@ public class BookServiceImplTest {
     @Test
     void shouldSaveNewBook() {
         var expectedBook = getNewBookData();
-        var actualBook = bookService.create(expectedBook);
+        BookCreateDto bookCreateDto = new BookCreateDto(expectedBook.getId(),
+                expectedBook.getTitle(), expectedBook.getAuthor(),expectedBook.getGenres());
+
+        var actualBook = bookService.create(bookCreateDto);
 
         assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() != null)

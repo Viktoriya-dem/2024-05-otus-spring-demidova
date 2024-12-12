@@ -3,10 +3,10 @@ package ru.otus.hw.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.otus.hw.dto.BookCreateDto;
 import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.dto.BookUpdateDto;
 import ru.otus.hw.services.BookService;
 
 import java.util.List;
@@ -31,25 +31,18 @@ public class BookController {
     }
 
     @PostMapping("/api/books")
-    public ResponseEntity<String> createBook(@RequestBody @Valid BookDto bookDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookDto createBook(@RequestBody @Valid BookCreateDto bookDto) {
 
-        bookService.create(bookDto);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return bookService.create(bookDto);
     }
 
-    @PatchMapping("/api/books")
-    public ResponseEntity<String> updateBook(@RequestBody @Valid BookDto bookDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(bindingResult.getAllErrors().toString());
-        }
+    @PatchMapping("/api/books/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BookDto updateBook(@PathVariable UUID id, @RequestBody @Valid BookUpdateDto bookDto) {
 
-        bookService.update(bookDto);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        bookDto.setId(id);
+        return bookService.update(bookDto);
     }
 
     @DeleteMapping("/api/books/{id}")

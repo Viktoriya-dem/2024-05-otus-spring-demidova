@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>ru.otus.hw</groupId>
-    <artifactId>hw09-web</artifactId>
+    <artifactId>hw10-react</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring-react</name>
 
