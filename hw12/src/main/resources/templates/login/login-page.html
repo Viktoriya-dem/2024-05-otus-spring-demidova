@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Вход</title>
+</head>
+<body>
+<h1>Вход</h1>
+<p th:if="${loginFail}" class="error" style="color: red">Неправильный пользователь или пароль</p>
+<form th:action="@{/extLogin}" method="post">
+    <label for="username">Имя пользователя</label>:
+    <input type="text" id="username" name="extuser" autofocus="autofocus"/> <br/>
+    <label for="password">Password</label>:
+    <input type="password" id="password" name="extpass"/> <br/>
+    <input type="submit" value="Войти"/>
+</form>
+</body>
+</html>
