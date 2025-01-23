@@ -42,7 +42,7 @@ public class TestServiceImplTest {
     @DisplayName(" вернуть корректный результат теста")
     public void shouldReturnCorrectTestResult() {
         given(questionDao.findAll()).willReturn(getQuestionTestData());
-        given(ioService.readIntForRange(1, 3, "Введите цифру от 1 до 3")).willReturn(1);
+        given(ioService.readIntForRange(1, 2, "Введите цифру от 1 до 2")).willReturn(1);
 
         TestResult testResult = testService.executeTestFor(getStudentTestData());
         assertThat(testResult).isEqualTo(getResultTestData());
@@ -52,7 +52,7 @@ public class TestServiceImplTest {
     @DisplayName(" засчитать правильный ответ")
     public void shouldCountCorrectAnswer() {
         given(questionDao.findAll()).willReturn(getQuestionTestData());
-        given(ioService.readIntForRange(1, 3, "Введите цифру от 1 до 3")).willReturn(1);
+        given(ioService.readIntForRange(1, 2, "Введите цифру от 1 до 2")).willReturn(1);
 
         TestResult testResult = testService.executeTestFor(getStudentTestData());
 
@@ -63,7 +63,7 @@ public class TestServiceImplTest {
     @DisplayName(" не засчитать неправильный ответ")
     public void shouldNotCountCorrectAnswer() {
         given(questionDao.findAll()).willReturn(getQuestionTestData());
-        given(ioService.readIntForRange(1, 3, "Введите цифру от 1 до 3")).willReturn(2);
+        given(ioService.readIntForRange(1,  2, "Введите цифру от 1 до 2")).willReturn(2);
 
         TestResult testResult = testService.executeTestFor(getStudentTestData());
         assertThat(testResult.getRightAnswersCount()).isEqualTo(0);
